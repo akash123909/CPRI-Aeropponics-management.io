@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Manage Users - CPRI Aeroponics</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div style="text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid var(--primary-color);">
+            <div style="font-size: 36px; margin-bottom: 8px;">🥔</div>
+            <h2 style="margin: 0; font-size: 18px;">CPRI</h2>
+            <p style="color: var(--text-muted); font-size: 11px; margin: 5px 0 0 0;">Aeroponics Management</p>
+        </div>
+        <a href="dashboard.html"><span>📊</span> Dashboard</a>
+        <a href="new-entry1.html"><span>📝</span> New Entry</a>
+        <a href="view-data.html"><span>📊</span> View Data</a>
+        <a href="analytics.html"><span>📈</span> Analytics</a>
+        <a href="manage-users.html" class="active"><span>👥</span> Users</a>
+        <a href="manage-unit.html"><span>🏭</span> Units</a>
+        <a href="index.html" style="margin-top: 30px; background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);"><span>🚪</span> Logout</a>
+    </div>
+
+    <div class="main">
+        <h1>👥 Manage Users</h1>
+
+        <div id="accessInfo" class="user-info" style="display: none;"></div>
+
+        <div class="form-container" style="max-width: 800px;">
+            <h2 style="color: #60A5FA; margin-bottom: 20px;">Add New User</h2>
+            <form id="addUserForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label for="username">Username</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div>
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <div>
+                        <label for="role">Role</label>
+                        <select id="role" required>
+                            <option value="">Select Role</option>
+                            <option value="Super Admin">Super Admin</option>
+                            <option value="Unit Admin">Unit Admin</option>
+                            <option value="User">User</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="unit">Unit</label>
+                        <select id="unit" required>
+                            <option value="">Select Unit</option>
+                            <option value="All">All (Super Admin only)</option>
+                            <option value="AB Tuber">AB Tuber</option>
+                            <option value="Star Biotech">Star Biotech</option>
+                            <option value="Nanak Biotech">Nanak Biotech</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit">➕ Add User</button>
+            </form>
+        </div>
+
+        <div class="data-table-container">
+            <h2 style="color: #60A5FA; margin: 30px 0 20px 0;">Existing Users</h2>
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Unit</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Loading users...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="css/js/auth.js"></script>
+    <script src="css/js/users.js"></script>
+    <script>
+        // Initialize page with role-based restrictions
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Check if user can manage users
+            if (!canManageUsers()) {
+                alert('You do not have permission to manage users.');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            // Show access information
+            const accessInfo = document.getElementById('accessInfo');
+            if (accessInfo) {
+                let accessText = '';
+                if (currentUser.role === 'Super Admin') {
+                    accessText = 'Access: Can manage all users across all units';
+                } else {
+                    accessText = `Access: Can manage users in ${currentUser.unit} only`;
+                }
+                accessInfo.textContent = accessText;
+                accessInfo.style.display = 'block';
+            }
+
+            // Restrict role dropdown based on user role
+            const roleSelect = document.getElementById('role');
+            if (roleSelect) {
+                const assignableRoles = getAssignableRoles();
+                const options = roleSelect.querySelectorAll('option');
+                options.forEach(option => {
+                    if (option.value && !assignableRoles.includes(option.value)) {
+                        option.remove();
+                    }
+                });
+            }
+
+            // Restrict unit dropdown based on user role
+            const unitSelect = document.getElementById('unit');
+            if (unitSelect) {
+                const assignableUnits = getAssignableUnits();
+                const options = unitSelect.querySelectorAll('option');
+                options.forEach(option => {
+                    if (option.value && !assignableUnits.includes(option.value)) {
+                        option.remove();
+                    }
+                });
+                
+                // Auto-select the user's unit for Unit Admin
+                if (currentUser.role === 'Unit Admin') {
+                    unitSelect.value = currentUser.unit;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>Login - CPRI Aeroponics Management System</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="login-card">
+        <div style="text-align: center; margin-bottom: 25px;">
+            <div style="font-size: 48px; margin-bottom: 10px;">🥔</div>
+            <h1>CPRI Aeroponics</h1>
+            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 5px;">Central Potato Research Institute</p>
+            <p style="color: var(--primary-light); font-size: 12px; margin-top: 5px; font-weight: 600;">Government of India</p>
+        </div>
+        
+        <form>
+            <label for="unit">Select Unit</label>
+            <select id="unit" required>
+                <option value="Select Unit">Select Unit</option>
+                <option value="AB Tuber">AB Tuber</option>
+                <option value="Star Biotech">Star Biotech</option>
+                <option value="Nanak Biotech">Nanak Biotech</option>
+            </select>
+
+            <label for="role">Select Role</label>
+            <select id="role" required>
+                <option value="Select Role">Select Role</option>
+                <option value="Super Admin">Super Admin</option>
+                <option value="Unit Admin">Unit Admin</option>
+                <option value="User">User</option>
+            </select>
+
+            <label for="username">Login ID</label>
+            <input type="text" id="username" placeholder="Enter your username" required autocomplete="username">
+
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+
+            <div id="loginError" class="alert"></div>
+
+            <button type="submit">🔐 LOGIN</button>
+        </form>
+
+        <div style="margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--surface-light);">
+            <h4 style="color: var(--primary-light); margin-bottom: 15px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">📋 Default Credentials:</h4>
+            <p style="color: var(--text-secondary); font-size: 12px; margin: 8px 0;">
+                <strong style="color: var(--primary-light);">Super Admin:</strong> admin / admin123
+            </p>
+            <p style="color: var(--text-secondary); font-size: 12px; margin: 8px 0;">
+                <strong style="color: var(--primary-light);">Unit Admin (AB Tuber):</strong> abadmin / ab123
+            </p>
+            <p style="color: var(--text-secondary); font-size: 12px; margin: 8px 0;">
+                <strong style="color: var(--primary-light);">Unit Admin (Star Biotech):</strong> staradmin / star123
+            </p>
+            <p style="color: var(--text-secondary); font-size: 12px; margin: 8px 0;">
+                <strong style="color: var(--primary-light);">Unit Admin (Nanak Biotech):</strong> nanakadmin / nanak123
+            </p>
+        </div>
+    </div>
+
+    <script src="css/js/auth.js"></script>
+    <script src="css/js/data.js"></script>
+</body>
+</html>

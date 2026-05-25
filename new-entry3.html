@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>New Entry - Step 3 | CPRI Aeroponics</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div style="text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid var(--primary-color);">
+            <div style="font-size: 36px; margin-bottom: 8px;">🥔</div>
+            <h2 style="margin: 0; font-size: 18px;">CPRI</h2>
+            <p style="color: var(--text-muted); font-size: 11px; margin: 5px 0 0 0;">Aeroponics Management</p>
+        </div>
+        <a href="dashboard.html"><span>📊</span> Dashboard</a>
+        <a href="new-entry1.html" class="active"><span>📝</span> New Entry</a>
+        <a href="view-data.html"><span>📊</span> View Data</a>
+        <a href="analytics.html"><span>📈</span> Analytics</a>
+        <a href="manage-users.html"><span>👥</span> Users</a>
+        <a href="manage-unit.html"><span>🏭</span> Units</a>
+        <a href="index.html" style="margin-top: 30px; background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);"><span>🚪</span> Logout</a>
+    </div>
+
+    <div class="main">
+        <h1>📝 New Entry - Step 3/3</h1>
+        <p style="color: #94A3B8; margin-bottom: 20px;">Production Details</p>
+
+        <div class="form-container">
+            <form id="entryForm3">
+                <label for="variety">Potato Variety</label>
+                <input type="text" id="variety" placeholder="e.g., Kufri Jyoti" required>
+
+                <label for="minitubers">Number of Minitubers</label>
+                <input type="number" id="minitubers" min="0" placeholder="Enter count" required>
+
+                <label for="weight">Total Weight (kg)</label>
+                <input type="number" id="weight" step="0.1" min="0" placeholder="Enter weight in kg" required>
+
+                <div id="formError" class="alert"></div>
+                <div id="formSuccess" class="alert success"></div>
+
+                <button type="button" onclick="location.href='new-entry2.html'">← Back</button>
+                <button type="submit">💾 Save & Finish</button>
+                <button type="button" class="secondary" onclick="location.href='dashboard.html'">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="css/js/auth.js"></script>
+    <script src="css/js/data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Guard 1: Active Session Check
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Guard 2: Wizard Progress Verification
+            const step1Data = sessionStorage.getItem('step1Data');
+            const step2Data = sessionStorage.getItem('step2Data');
+            if (!step1Data || !step2Data) {
+                alert('Please complete Steps 1 and 2 first.');
+                window.location.href = 'new-entry1.html';
+                return;
+            }
+
+            // Load existing data if returning from next step
+            const savedData = sessionStorage.getItem('entryStep3');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('variety').value = data.variety || '';
+                document.getElementById('minitubers').value = data.minitubers || '';
+                document.getElementById('weight').value = data.weight || '';
+            }
+        });
+
+        document.getElementById('entryForm3').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const step1Data = JSON.parse(sessionStorage.getItem('step1Data'));
+            const step2Data = JSON.parse(sessionStorage.getItem('step2Data'));
+            
+            const finalData = {
+                ...step1Data,
+                ...step2Data,
+                variety: document.getElementById('variety').value,
+                minitubers: parseInt(document.getElementById('minitubers').value),
+                weight: parseFloat(document.getElementById('weight').value)
+            };
+            
+            const result = dataManager.createEntry(finalData);
+            
+            if (result.success) {
+                document.getElementById('formSuccess').textContent = '✅ Entry saved successfully! Redirecting to dashboard...';
+                document.getElementById('formSuccess').style.display = 'block';
+                document.getElementById('formError').style.display = 'none';
+                
+                // Clear sessionStorage
+                sessionStorage.removeItem('step1Data');
+                sessionStorage.removeItem('step2Data');
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            } else {
+                document.getElementById('formError').innerHTML = result.errors.join('<br>');
+                document.getElementById('formError').style.display = 'block';
+                document.getElementById('formSuccess').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

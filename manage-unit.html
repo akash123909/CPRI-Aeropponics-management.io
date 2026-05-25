@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Manage Units - CPRI Aeroponics</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div style="text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid var(--primary-color);">
+            <div style="font-size: 36px; margin-bottom: 8px;">🥔</div>
+            <h2 style="margin: 0; font-size: 18px;">CPRI</h2>
+            <p style="color: var(--text-muted); font-size: 11px; margin: 5px 0 0 0;">Aeroponics Management</p>
+        </div>
+        <a href="dashboard.html"><span>📊</span> Dashboard</a>
+        <a href="new-entry1.html"><span>📝</span> New Entry</a>
+        <a href="view-data.html"><span>📊</span> View Data</a>
+        <a href="analytics.html"><span>📈</span> Analytics</a>
+        <a href="manage-users.html"><span>👥</span> Users</a>
+        <a href="manage-unit.html" class="active"><span>🏭</span> Units</a>
+        <a href="index.html" style="margin-top: 30px; background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);"><span>🚪</span> Logout</a>
+    </div>
+
+    <div class="main">
+        <h1>🏭 Manage Units</h1>
+
+        <div id="accessInfo" class="user-info" style="display: none;"></div>
+
+        <div class="form-container" style="max-width: 800px;">
+            <h2 style="color: #60A5FA; margin-bottom: 20px;">Add New Unit</h2>
+            <form id="addUnitForm">
+                <label for="unitName">Unit Name</label>
+                <input type="text" id="unitName" placeholder="e.g., New Biotech Unit" required>
+
+                <label for="unitLocation">Location</label>
+                <input type="text" id="unitLocation" placeholder="e.g., Shimla, Himachal Pradesh" required>
+
+                <label for="unitCapacity">Capacity (Number of Plants)</label>
+                <input type="number" id="unitCapacity" min="0" placeholder="e.g., 5000" required>
+
+                <label for="unitStatus">Status</label>
+                <select id="unitStatus" required>
+                    <option value="">Select Status</option>
+                    <option value="Active">✅ Active</option>
+                    <option value="Inactive">❌ Inactive</option>
+                    <option value="Maintenance">🔧 Under Maintenance</option>
+                </select>
+
+                <button type="submit">➕ Add Unit</button>
+            </form>
+        </div>
+
+        <div class="data-table-container">
+            <h2 style="color: #60A5FA; margin: 30px 0 20px 0;">Existing Units</h2>
+            <table id="unitsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Unit Name</th>
+                        <th>Location</th>
+                        <th>Capacity</th>
+                        <th>Status</th>
+                        <th>Total Entries</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="unitsTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align: center;">Loading units...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="css/js/auth.js"></script>
+    <script src="css/js/data.js"></script>
+    <script src="css/js/unit.js"></script>
+    <script>
+        // Initialize page with Super Admin only access
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Check if user can manage units (Super Admin only)
+            if (!canManageUnits()) {
+                alert('Access Denied: Only Super Admin can manage units.');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            // Show access information
+            const accessInfo = document.getElementById('accessInfo');
+            if (accessInfo) {
+                accessInfo.textContent = 'Access: Super Admin - Can add, edit, and delete any unit';
+                accessInfo.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
