@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const UserSchema = new mongoose.Schema({
-    id: Number,
+const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
@@ -16,16 +15,18 @@ const UserSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        sparse: true
+        required: true,
+        unique: true,
+        lowercase: true
     },
     role: {
         type: String,
-        enum: ['Super Admin', 'Unit Admin', 'User'],
+        enum: ['Super Admin', 'Admin', 'User'],
         default: 'User'
     },
     unit: {
         type: String,
-        enum: ['All', 'AB Tuber', 'Star Biotech', 'Nanak Biotech'],
+        enum: ['AB Tuber', 'Microtuber', 'All'],
         default: 'AB Tuber'
     },
     active: {
@@ -43,10 +44,9 @@ const UserSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-UserSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) {
-        return next();
-    }
+userSchema.pre('save', async function(next) {
+    if (!this.isModified('password')) return next();
+    
     try {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
@@ -57,19 +57,8 @@ UserSchema.pre('save', async function(next) {
 });
 
 // Method to compare passwords
-UserSchema.methods.comparePassword = async function(enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password);
+userSchema.methods.comparePassword = async function(password) {
+    return await bcrypt.compare(password, this.password);
 };
 
-// Default users data
-const defaultUsers = [
-    { id: 1, username: 'admin', password: 'admin123', role: 'Super Admin', unit: 'All' },
-    { id: 2, username: 'abadmin', password: 'ab123', role: 'Unit Admin', unit: 'AB Tuber' },
-    { id: 3, username: 'staradmin', password: 'star123', role: 'Unit Admin', unit: 'Star Biotech' },
-    { id: 4, username: 'nanakadmin', password: 'nanak123', role: 'Unit Admin', unit: 'Nanak Biotech' },
-    { id: 5, username: 'user1', password: 'user123', role: 'User', unit: 'AB Tuber' },
-    { id: 6, username: 'user2', password: 'user123', role: 'User', unit: 'Star Biotech' }
-];
-
-module.exports = mongoose.model('User', UserSchema);
-module.exports.defaultUsers = defaultUsers;
+module.exports = mongoose.model('User', userSchema);
